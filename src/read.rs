@@ -467,7 +467,7 @@ impl<R: io::Read> ChunksReader<R> {
         let format_tag = try!(self.reader.read_le_u16());
         let n_channels = try!(self.reader.read_le_u16());
         let n_samples_per_sec = try!(self.reader.read_le_u32());
-        let n_bytes_per_sec = try!(self.reader.read_le_u32());
+        let _n_bytes_per_sec = try!(self.reader.read_le_u32());
         let block_align = try!(self.reader.read_le_u16());
         let bits_per_sample = try!(self.reader.read_le_u16());
 
@@ -477,8 +477,7 @@ impl<R: io::Read> ChunksReader<R> {
 
         // Two of the stored fields are redundant, and may be ignored. We do
         // validate them to fail early for ill-formed files.
-        if (Some(bits_per_sample) != (block_align / n_channels).checked_mul(8)) ||
-           (Some(n_bytes_per_sec) != (block_align as u32).checked_mul(n_samples_per_sec)) {
+        if Some(bits_per_sample) != (block_align / n_channels).checked_mul(8) {
             return Err(Error::FormatError("inconsistent fmt chunk"));
         }
 
